@@ -91,4 +91,15 @@ public class UsuarioMapper {
                 .numero(telefone.getNumero())
                 .build();
     }
+
+    public Usuario updateUsuario(Usuario entity, UsuarioDTO usuarioDTO) {
+        return Usuario.builder()
+                .id(entity.getId())
+                .nome(usuarioDTO.getNome() != null ? usuarioDTO.getNome() : entity.getNome())
+                .senha(usuarioDTO.getSenha() != null ? usuarioDTO.getSenha() : entity.getSenha())
+                .email(usuarioDTO.getEmail() != null ? usuarioDTO.getEmail() : entity.getEmail())
+                .enderecos(entity.getEnderecos())
+                .telefones(entity.getTelefones())
+                .build();
+    }
 }

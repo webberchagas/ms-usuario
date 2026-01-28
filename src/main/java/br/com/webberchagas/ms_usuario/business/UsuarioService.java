@@ -6,6 +6,7 @@ import br.com.webberchagas.ms_usuario.infrastructure.entity.Usuario;
 import br.com.webberchagas.ms_usuario.infrastructure.exception.ConflitoException;
 import br.com.webberchagas.ms_usuario.infrastructure.exception.ResourceNotFoundException;
 import br.com.webberchagas.ms_usuario.infrastructure.repository.UsuarioRepository;
+import br.com.webberchagas.ms_usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class UsuarioService {
     private final UsuarioRepository repository;
     private final UsuarioMapper mapper;
     private final PasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UsuarioDTO salvar(UsuarioDTO usuarioDTO) {
         emailExiste(usuarioDTO.getEmail());
@@ -53,5 +55,18 @@ public class UsuarioService {
                 () -> new ResourceNotFoundException("Usuário não encontrado com o email: " + email)
         );
         repository.delete(usuario);
+    }
+
+    public UsuarioDTO atualizaDadosUsuario(String token, UsuarioDTO dto) {
+        String email = jwtUtil.extractUsername(token.substring(7));
+
+        dto.setSenha(dto.getSenha() != null ? bCryptPasswordEncoder.encode(dto.getSenha()) : null);
+
+        Usuario usuarioEntity = repository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("Usuário não encontrado com o email: " + email)
+        );
+
+        Usuario usuarioAtualizado = mapper.updateUsuario(usuarioEntity, dto);
+        return mapper.toUsuarioDTO(repository.save(usuarioAtualizado));
     }
 }
