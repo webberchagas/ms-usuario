@@ -1,6 +1,8 @@
 package br.com.webberchagas.ms_usuario.controller;
 
 import br.com.webberchagas.ms_usuario.business.UsuarioService;
+import br.com.webberchagas.ms_usuario.business.dtos.EnderecoDTO;
+import br.com.webberchagas.ms_usuario.business.dtos.TelefoneDTO;
 import br.com.webberchagas.ms_usuario.business.dtos.UsuarioDTO;
 import br.com.webberchagas.ms_usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -48,4 +50,23 @@ public class UsuarioController {
         usuarioService.deletarUsuarioPorEmail(email);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping
+    public ResponseEntity<UsuarioDTO> atualizarUsuarioPorEmail(@RequestBody UsuarioDTO usuarioDTO,
+                                                               @RequestHeader("Authorization") String token){
+        return ResponseEntity.ok(usuarioService.atualizaDadosUsuario(token, usuarioDTO));
+    }
+
+    @PutMapping("/endereco")
+    public ResponseEntity<EnderecoDTO> atualizaEnderecoPorId(@RequestParam("id") Long id,
+                                                              @RequestBody EnderecoDTO enderecoDTO){
+        return ResponseEntity.ok(usuarioService.atualizaEndereco(id,enderecoDTO));
+    }
+
+    @PutMapping("/telefone")
+    public ResponseEntity<TelefoneDTO> atualizaTelefonePorId(@RequestParam("id") Long id,
+                                                             @RequestBody TelefoneDTO telefoneDTO){
+        return ResponseEntity.ok(usuarioService.atualizaTelefone(id,telefoneDTO));
+    }
+
 }
